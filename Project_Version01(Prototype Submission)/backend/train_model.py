@@ -18,59 +18,18 @@ print("=" * 60)
 os.makedirs('../models', exist_ok=True)
 os.makedirs('../data', exist_ok=True)
 
-# Sample Disease-Symptom Dataset
-# In real scenario, download from Kaggle
-print("\n[1/7] Creating Sample Dataset...")
+# Load existing dataset with expanded symptoms
+print("\n[1/7] Loading Existing Dataset...")
+df = pd.read_csv('../data/disease_symptom_dataset.csv')
 
-# Creating a comprehensive symptom-disease dataset
-diseases = {
-    'Flu': ['fever', 'cough', 'fatigue', 'body_ache', 'headache'],
-    'Common Cold': ['cough', 'runny_nose', 'sneezing', 'sore_throat', 'mild_fever'],
-    'Pneumonia': ['high_fever', 'cough', 'chest_pain', 'difficulty_breathing', 'fatigue'],
-    'Bronchitis': ['cough', 'mucus_production', 'fatigue', 'chest_discomfort', 'shortness_of_breath'],
-    'Asthma': ['wheezing', 'shortness_of_breath', 'chest_tightness', 'coughing', 'difficulty_breathing'],
-    'COVID-19': ['fever', 'dry_cough', 'fatigue', 'loss_of_taste', 'difficulty_breathing'],
-    'Malaria': ['high_fever', 'chills', 'sweating', 'headache', 'nausea'],
-    'Dengue': ['high_fever', 'severe_headache', 'joint_pain', 'muscle_pain', 'rash'],
-    'Typhoid': ['prolonged_fever', 'weakness', 'abdominal_pain', 'headache', 'loss_of_appetite'],
-    'Tuberculosis': ['persistent_cough', 'chest_pain', 'coughing_blood', 'weight_loss', 'night_sweats'],
-    'Diabetes': ['frequent_urination', 'excessive_thirst', 'hunger', 'fatigue', 'blurred_vision'],
-    'Hypertension': ['headache', 'dizziness', 'chest_pain', 'shortness_of_breath', 'nosebleeds'],
-    'Migraine': ['severe_headache', 'nausea', 'vomiting', 'sensitivity_to_light', 'visual_disturbances'],
-    'Gastroenteritis': ['diarrhea', 'vomiting', 'stomach_cramps', 'nausea', 'fever'],
-    'Food Poisoning': ['nausea', 'vomiting', 'diarrhea', 'stomach_cramps', 'fever'],
-    'Urinary Tract Infection': ['burning_urination', 'frequent_urination', 'cloudy_urine', 'pelvic_pain', 'fever'],
-    'Kidney Stones': ['severe_pain', 'blood_in_urine', 'nausea', 'vomiting', 'frequent_urination'],
-    'Arthritis': ['joint_pain', 'stiffness', 'swelling', 'decreased_range_of_motion', 'fatigue'],
-    'Allergy': ['sneezing', 'runny_nose', 'itchy_eyes', 'rash', 'swelling'],
-    'Anemia': ['fatigue', 'weakness', 'pale_skin', 'shortness_of_breath', 'dizziness'],
-}
+# Get all unique symptoms from the CSV (excluding 'disease' column)
+all_symptoms = [col for col in df.columns if col != 'disease']
 
-# Get all unique symptoms
-all_symptoms = sorted(list(set([symptom for symptoms in diseases.values() for symptom in symptoms])))
+# Get all unique diseases
+diseases_list = df['disease'].unique().tolist()
+
 print(f"Total Symptoms: {len(all_symptoms)}")
-print(f"Total Diseases: {len(diseases)}")
-
-# Create dataset
-data = []
-for disease, symptoms in diseases.items():
-    # Create multiple samples with different symptom combinations
-    for _ in range(50):  # 50 samples per disease
-        row = {symptom: 0 for symptom in all_symptoms}
-        # Randomly select 3-5 symptoms from the disease's symptom list
-        num_symptoms = np.random.randint(3, min(6, len(symptoms) + 1))
-        selected_symptoms = np.random.choice(symptoms, num_symptoms, replace=False)
-        for symptom in selected_symptoms:
-            row[symptom] = 1
-        row['disease'] = disease
-        data.append(row)
-
-df = pd.DataFrame(data)
-
-# Save dataset
-dataset_path = '../data/disease_symptom_dataset.csv'
-df.to_csv(dataset_path, index=False)
-print(f"Dataset saved to: {dataset_path}")
+print(f"Total Diseases: {len(diseases_list)}")
 print(f"Dataset shape: {df.shape}")
 
 # Display sample
@@ -311,7 +270,7 @@ print(f"✓ Disease information saved to: {disease_info_path}")
 # Save model metrics
 metrics = {
     'accuracy': float(accuracy),
-    'total_diseases': len(diseases),
+    'total_diseases': len(diseases_list),
     'total_symptoms': len(all_symptoms),
     'training_samples': len(X_train),
     'testing_samples': len(X_test),
@@ -333,5 +292,5 @@ print(f"  2. Symptoms: {symptom_list_path}")
 print(f"  3. Disease Info: {disease_info_path}")
 print(f"  4. Metrics: {metrics_path}")
 print(f"  5. Confusion Matrix: ../models/confusion_matrix.png")
-print(f"  6. Dataset: {dataset_path}")
+print(f"  6. Dataset: ../data/disease_symptom_dataset.csv")
 print("\n✓ Ready to run Flask API server!")
