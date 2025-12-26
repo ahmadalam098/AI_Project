@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Page Removed</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: Arial, Helvetica, sans-serif
+        }
+
+        .box {
+            max-width: 720px;
+            text-align: center;
+            padding: 2rem;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06)
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <h1>Page removed</h1>
+        <p>The Home page has been removed from this build. You can continue to use the application via the <a
+                href="diagnosis.html">Diagnosis</a> or <a href="login.html">Login</a> pages.</p>
+        <p>Redirecting to the Diagnosis page in a moment...</p>
+    </div>
+    <script>setTimeout(() => { window.location.href = 'diagnosis.html' }, 2000)</script>
+</body>
+
+</html>
