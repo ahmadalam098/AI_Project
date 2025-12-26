@@ -1,9 +1,0 @@
-{
-  "accuracy": 0.965,
-  "total_diseases": 20,
-  "total_symptoms": 98,
-  "training_samples": 800,
-  "testing_samples": 200,
-  "model_type": "Support Vector Machine (SVM)",
-  "kernel": "RBF (Radial Basis Function)"
-}
