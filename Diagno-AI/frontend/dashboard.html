@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AI Health Diagnostic</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <div class="logo-with-img">
+                    <img src="assets/img/brand-logo.svg" alt="AI Health Diagnostic" class="site-logo-img"
+                        onerror="this.style.display='none'" />
+                </div>
+                <span>AI Health Diagnostic</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html" class="active">Dashboard</a></li>
+                <li><a href="diagnosis.html">Diagnosis</a></li>
+            </ul>
+            <div id="userInfo"></div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="hero" style="padding: 2rem;">
+            <h1> Welcome back, <span id="userName"></span>!</h1>
+            <br>
+            <p>Your health companion powered by AI</p>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-3"
+            style="margin-top: 2rem; display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap;">
+            <a href="diagnosis.html" class="card"
+                style="text-decoration: none; text-align: center; cursor: pointer; min-width: 260px; background: #0f172a; color: #f8fafc; border: 1px solid #1f2937; box-shadow: 0 10px 30px rgba(0,0,0,0.25);">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">🔬</div>
+                <h3 style="color: #38bdf8;">Start Diagnosis</h3>
+            </a>
+
+            <a href="reports.html" class="card"
+                style="display: block; text-align: center; cursor: pointer; min-width: 260px; background: #0f172a; color: #f8fafc; border: 1px solid #1f2937; box-shadow: 0 10px 30px rgba(0,0,0,0.25); text-decoration: none;">
+                <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+                <h3 style="color: #38bdf8;">View Reports</h3>
+                <p style="color: #cbd5e1;"><span id="reportCount">0</span> saved reports</p>
+            </a>
+
+
+        </div>
+
+        <!-- System Statistics -->
+        <div class="card" style="margin-top: 2rem;">
+            <div class="card-header">
+                <h2>System Overview</h2>
+            </div>
+            <div class="stats">
+                <div class="stat-card">
+                    <h3 id="dashTotalDiseases">20</h3>
+                    <p>Diseases in Database</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="dashTotalSymptoms">50+</h3>
+                    <p>Symptoms Tracked</p>
+                </div>
+                <div class="stat-card">
+                    <h3 id="dashAccuracy">60%</h3>
+                    <p>Model Accuracy</p>
+                </div>
+                <div class="stat-card">
+                    <h3>SVM</h3>
+                    <p>ML Algorithm</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Reports -->
+        <div class="card" style="margin-top: 2rem;">
+            <div class="card-header">
+                <h2>Your Recent Diagnoses</h2>
+            </div>
+            <div id="recentReports">
+                <p style="text-align: center; padding: 2rem; color: var(--gray);">
+                    Loading reports...
+                </p>
+            </div>
+        </div>
+
+        <!-- Available Diseases -->
+        <div class="card" style="margin-top: 2rem;">
+            <div class="card-header">
+                <h2> Diseases We Can Detect</h2>
+            </div>
+            <div id="diseasesList">
+                <p style="text-align: center; padding: 2rem; color: var(--gray);">
+                    Loading diseases...
+                </p>
+            </div>
+        </div>
+
+        <!-- Quick Tips -->
+        <div class="card"
+            style="margin-top: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <h3 style="margin-bottom: 1rem;">💡 Health Tips</h3>
+            <ul style="list-style: none; padding: 0;">
+                <li style="padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                    ✓ Stay hydrated - drink at least 8 glasses of water daily
+                </li>
+                <li style="padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                    ✓ Exercise regularly - at least 30 minutes of physical activity
+                </li>
+                <li style="padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                    ✓ Get adequate sleep - 7-9 hours per night
+                </li>
+                <li style="padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                    ✓ Eat a balanced diet with fruits and vegetables
+                </li>
+                <li style="padding: 0.8rem 0;">
+                    ✓ Wash hands frequently to prevent infections
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 AI Health Diagnostic - AI Health Diagnosis System</p>
+    </footer>
+
+    <script src="assets/js/app.js"></script>
+    <script>
+        // Display user name
+        const user = getUser();
+        if (user) {
+            document.getElementById('userName').textContent = user.fullname || user.username;
+        }
+
+        // Load system metrics
+        async function loadMetrics() {
+            const metrics = await apiRequest('/get-metrics');
+            if (metrics.success) {
+                const m = metrics.metrics;
+                document.getElementById('dashTotalDiseases').textContent = m.total_diseases;
+                document.getElementById('dashTotalSymptoms').textContent = m.total_symptoms + '+';
+                document.getElementById('dashAccuracy').textContent = (m.accuracy * 100).toFixed(1) + '%';
+            }
+        }
+
+        // Load user reports
+        async function loadReports() {
+            const reportsDiv = document.getElementById('recentReports');
+            const result = await apiRequest('/get-reports', 'GET', null, true);
+
+            if (!result.success) {
+                document.getElementById('reportCount').textContent = '0';
+                reportsDiv.innerHTML = `
+                    <div style="text-align: center; padding: 3rem;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">🔒</div>
+                        <h3 style="color: var(--gray);">Login to see your reports</h3>
+                        <p style="color: var(--gray); margin-bottom: 1.5rem;">Your saved diagnoses are tied to your account.</p>
+                        <a href="login.html" class="btn btn-primary">Login</a>
+                    </div>
+                `;
+                return;
+            }
+
+            if (result.reports.length > 0) {
+                document.getElementById('reportCount').textContent = result.total;
+
+                let html = '<table><thead><tr><th>Date</th><th>Disease</th><th>Symptoms</th><th>Confidence</th></tr></thead><tbody>';
+
+                result.reports.slice(-5).reverse().forEach(report => {
+                    html += `
+                        <tr>
+                            <td>${formatDate(report.timestamp)}</td>
+                            <td><strong>${report.prediction}</strong></td>
+                            <td>${report.symptoms.slice(0, 3).map(s => formatSymptomName(s)).join(', ')}${report.symptoms.length > 3 ? '...' : ''}</td>
+                            <td><span class="badge badge-success">${report.confidence}%</span></td>
+                        </tr>
+                    `;
+                });
+
+                html += '</tbody></table>';
+                reportsDiv.innerHTML = html;
+            } else {
+                document.getElementById('reportCount').textContent = '0';
+                reportsDiv.innerHTML = `
+                    <div style="text-align: center; padding: 3rem;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">📋</div>
+                        <h3 style="color: var(--gray);">No Reports Yet</h3>
+                        <p style="color: var(--gray); margin-bottom: 1.5rem;">Start your first diagnosis to see reports here</p>
+                        <a href="diagnosis.html" class="btn btn-primary">Start Diagnosis</a>
+                    </div>
+                `;
+            }
+        }
+
+        // Load diseases
+        async function loadDiseases() {
+            const result = await apiRequest('/get-diseases');
+            const diseasesDiv = document.getElementById('diseasesList');
+
+            if (result.success) {
+                let html = '<div class="grid grid-3">';
+                result.diseases.forEach(disease => {
+                    const severityColor = getSeverityColor(disease.severity);
+                    html += `
+                        <div style="padding: 1rem; background: var(--light); border-radius: 8px; border-left: 4px solid ${severityColor};">
+                            <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">${disease.name}</h4>
+                            <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 0.5rem;">${disease.description.substring(0, 80)}...</p>
+                            <span class="badge" style="background: ${severityColor}20; color: ${severityColor};">${disease.severity}</span>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                diseasesDiv.innerHTML = html;
+            }
+        }
+
+        // Load all data
+        loadMetrics();
+        loadReports();
+        loadDiseases();
+    </script>
+</body>
+
+</html>

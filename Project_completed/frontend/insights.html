@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Insights - AI Health Diagnostic</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <div class="logo-with-img">
+                    <img src="assets/img/brand-logo.svg" alt="AI Health Diagnostic" class="site-logo-img"
+                        onerror="this.style.display='none'" />
+                </div>
+                <span>AI Health Diagnostic</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="diagnosis.html">Diagnosis</a></li>
+                <li><a href="insights.html" class="active">Insights</a></li>
+            </ul>
+            <div id="userInfo"></div>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="hero" style="padding: 2rem;">
+            <h1>📊 Insights & Analytics</h1>
+            <p style="margin-top: 0.5rem; color: var(--gray);">Explore model health, dataset coverage, and the
+                symptom patterns powering predictions.</p>
+        </div>
+
+        <!-- Quick Metrics -->
+        <div class="grid grid-3" style="margin-top: 1.5rem; gap: 1rem;">
+            <div class="stat-card">
+                <h3 id="modelAccuracy">--%</h3>
+                <p>Model Accuracy</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalDiseases">--</h3>
+                <p>Diseases Covered</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalSymptoms">--</h3>
+                <p>Symptoms Tracked</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="trainingsamples">--</h3>
+                <p>Training Samples</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="modelType">--</h3>
+                <p>Model Type</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="kernel">--</h3>
+                <p>Kernel</p>
+            </div>
+        </div>
+
+        <!-- Performance Overview -->
+        <div class="card" style="margin-top: 2rem;">
+            <div class="card-header">
+                <h2>Model Performance</h2>
+                <p style="color: var(--gray); font-size: 0.95rem;">Training vs testing strength across key metrics.</p>
+            </div>
+            <div class="card-body">
+                <canvas id="performanceChart" style="max-height: 360px;"></canvas>
+            </div>
+        </div>
+
+        <!-- Distribution Charts -->
+        <div class="grid grid-2" style="margin-top: 2rem; gap: 1.5rem;">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Severity Distribution</h3>
+                    <p style="color: var(--gray); font-size: 0.9rem;">How detected diseases spread across severity
+                        levels.</p>
+                </div>
+                <div class="card-body">
+                    <canvas id="severityChart" style="max-height: 320px;"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3>Disease Categories</h3>
+                    <p style="color: var(--gray); font-size: 0.9rem;">Cases grouped by medical specialty.</p>
+                </div>
+                <div class="card-body">
+                    <canvas id="categoryChart" style="max-height: 320px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 2rem;">
+            <div class="card-header">
+                <h3>Samples per Disease</h3>
+                <p style="color: var(--gray); font-size: 0.9rem;">Dataset balance across all supported conditions.</p>
+            </div>
+            <div class="card-body">
+                <canvas id="diseaseChart" style="max-height: 420px;"></canvas>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 2rem;">
+            <div class="card-header">
+                <h3>Top Symptoms</h3>
+                <p style="color: var(--gray); font-size: 0.9rem;">Most frequent symptoms across diseases.</p>
+            </div>
+            <div class="card-body">
+                <canvas id="symptomChart" style="max-height: 420px;"></canvas>
+            </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top: 2rem; gap: 1.5rem;">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Prediction Confidence</h3>
+                    <p style="color: var(--gray); font-size: 0.9rem;">Typical confidence intervals for predictions.</p>
+                </div>
+                <div class="card-body">
+                    <canvas id="confidenceChart" style="max-height: 320px;"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3>Feature Importance</h3>
+                    <p style="color: var(--gray); font-size: 0.9rem;">Symptoms with the strongest predictive weight.</p>
+                </div>
+                <div class="card-body">
+                    <canvas id="importanceChart" style="max-height: 360px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 2rem;">
+            <div class="card-header">
+                <h3>Confusion Matrix</h3>
+                <p style="color: var(--gray); font-size: 0.9rem;">See the trained matrix at models/confusion_matrix.png
+                </p>
+            </div>
+            <div class="card-body" style="text-align: center;">
+                <div style="background: var(--light); padding: 2rem; border-radius: 10px;">
+                    <div style="font-size: 3rem; margin-bottom: 0.75rem;">📊</div>
+                    <p style="color: var(--gray);">Matrix is generated during training and saved alongside the model
+                        files.</p>
+                    <p style="margin-top: 0.5rem;">Path: models/confusion_matrix.png</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card"
+            style="margin-top: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <h3 style="margin-bottom: 1rem;">Key Insights</h3>
+            <div class="grid grid-2">
+                <div style="background: rgba(255,255,255,0.1); padding: 1.25rem; border-radius: 10px;">
+                    <h4 style="margin-bottom: 0.6rem;">High Accuracy</h4>
+                    <p>Balanced dataset and tuned SVM kernel deliver consistent results.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 1.25rem; border-radius: 10px;">
+                    <h4 style="margin-bottom: 0.6rem;">Comprehensive Coverage</h4>
+                    <p>Tracks 20+ diseases spanning respiratory, infectious, and chronic categories.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 1.25rem; border-radius: 10px;">
+                    <h4 style="margin-bottom: 0.6rem;">Real-time Predictions</h4>
+                    <p>Inference is near-instant so clinicians see feedback immediately.</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.1); padding: 1.25rem; border-radius: 10px;">
+                    <h4 style="margin-bottom: 0.6rem;">Continuous Improvement</h4>
+                    <p>Retraining hook keeps the model current as new samples arrive.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 AI Health Diagnostic - AI Health Diagnosis System</p>
+    </footer>
+
+    <script src="assets/js/app.js"></script>
+    <script>
+        let charts = {};
+
+        async function loadMetrics() {
+            const result = await apiRequest('/get-metrics');
+            if (result.success) {
+                const m = result.metrics;
+                const accuracyEl = document.getElementById('modelAccuracy');
+                if (accuracyEl) accuracyEl.textContent = (m.accuracy * 100).toFixed(2) + '%';
+                const diseaseEl = document.getElementById('totalDiseases');
+                if (diseaseEl) diseaseEl.textContent = m.total_diseases;
+                const symptomEl = document.getElementById('totalSymptoms');
+                if (symptomEl) symptomEl.textContent = m.total_symptoms;
+                const samplesEl = document.getElementById('trainingsamples');
+                if (samplesEl) samplesEl.textContent = m.training_samples;
+                const modelEl = document.getElementById('modelType');
+                if (modelEl) modelEl.textContent = m.model_type;
+                const kernelEl = document.getElementById('kernel');
+                if (kernelEl) kernelEl.textContent = m.kernel;
+            }
+        }
+
+        async function loadCharts() {
+            if (typeof Chart === 'undefined') {
+                showAlert('Charts unavailable because Chart.js did not load.', 'error');
+                return;
+            }
+
+            const result = await apiRequest('/get-chart-data');
+            if (!result.success) return;
+
+            const data = result.charts;
+
+            createBarChart('performanceChart', 'Model Performance Metrics', data.model_performance.labels, data.model_performance.data, ['#4F46E5', '#10B981', '#F59E0B']);
+            createPieChart('severityChart', 'Disease Severity Distribution', data.severity_distribution.labels, data.severity_distribution.data, ['#10B981', '#F59E0B', '#EF4444', '#8B5CF6']);
+            createHorizontalBarChart('diseaseChart', 'Samples per Disease', data.disease_distribution.labels, data.disease_distribution.data);
+            createGradientBarChart('symptomChart', 'Most Common Symptoms', data.symptom_frequency.labels, data.symptom_frequency.data);
+            createPieChart('categoryChart', 'Disease Categories', data.disease_categories.labels, data.disease_categories.data, ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899']);
+            createLineChart('confidenceChart', 'Prediction Confidence', data.confidence_levels.labels, data.confidence_levels.data);
+            createImportanceChart('importanceChart', 'Feature Importance', data.feature_importance.labels, data.feature_importance.data);
+        }
+
+        function createBarChart(canvasId, title, labels, data, colors) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            charts[canvasId] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: title,
+                        data,
+                        backgroundColor: Array.isArray(colors) ? colors : colors,
+                        borderColor: Array.isArray(colors) ? colors : colors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: (value) => value + (canvasId === 'performanceChart' ? '%' : '')
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createHorizontalBarChart(canvasId, title, labels, data) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            charts[canvasId] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: title,
+                        data,
+                        backgroundColor: '#4F46E5',
+                        borderColor: '#4F46E5',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: false } },
+                    scales: { x: { beginAtZero: true } }
+                }
+            });
+        }
+
+        function createPieChart(canvasId, title, labels, data, colors) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            charts[canvasId] = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: title,
+                        data,
+                        backgroundColor: colors,
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+        }
+
+        function createLineChart(canvasId, title, labels, data) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            charts[canvasId] = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: title,
+                        data,
+                        borderColor: '#4F46E5',
+                        backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                        pointBackgroundColor: '#4F46E5',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { callback: (value) => value + '%' }
+                        }
+                    }
+                }
+            });
+        }
+
+        function createGradientBarChart(canvasId, title, labels, data) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, '#4F46E5');
+            gradient.addColorStop(0.5, '#10B981');
+            gradient.addColorStop(1, '#F59E0B');
+
+            charts[canvasId] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: title,
+                        data,
+                        backgroundColor: gradient,
+                        borderColor: gradient,
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        function createImportanceChart(canvasId, title, labels, data) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            const colors = data.map((value) => {
+                const ratio = value / Math.max(...data);
+                return `rgba(79, 70, 229, ${0.3 + ratio * 0.7})`;
+            });
+
+            charts[canvasId] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Importance Score',
+                        data,
+                        backgroundColor: colors,
+                        borderColor: '#4F46E5',
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { callback: (value) => value + '%' }
+                        }
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateNavigation();
+            loadMetrics();
+            loadCharts();
+        });
+    </script>
+</body>
+
+</html>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Page Removed</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            font-family: Inter, Arial, Helvetica, sans-serif
+        }
+
+        .box {
+            max-width: 720px;
+            text-align: center;
+            padding: 2rem;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06)
+        }
+    </style>
+</head>
+
+<body>
+    <div class="box">
+        <h1>Page removed</h1>
+        <p>The Insights page has been removed. Dashboard continues to show key statistics.</p>
+        <p>Redirecting to the Dashboard page...</p>
+    </div>
+    <script>setTimeout(() => { window.location.href = 'dashboard.html' }, 1500)</script>
+</body>
+
+</html>
+(Total: 1000 samples)</p>
+</div>
+<div class="card-body">
+    <canvas id="diseaseChart" style="max-height: 400px;"></canvas>
+</div>
+</div>
+
+<!-- Symptom Frequency Chart -->
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h3>📊 Top 15 Most Common Symptoms</h3>
+        <p style="font-size: 0.85rem; color: var(--gray); margin-top: 0.5rem;">Symptom occurrence across all
+            diseases</p>
+    </div>
+    <div class="card-body">
+        <canvas id="symptomChart" style="max-height: 400px;"></canvas>
+    </div>
+</div>
+
+<!-- Additional Charts Grid -->
+<div class="grid grid-2" style="margin-top: 2rem;">
+    <!-- Disease Categories Chart -->
+    <div class="card">
+        <div class="card-header">
+            <h3>🏥 Disease Categories</h3>
+            <p style="font-size: 0.85rem; color: var(--gray); margin-top: 0.5rem;">Distribution by medical
+                category</p>
+        </div>
+        <div class="card-body">
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Prediction Confidence Chart -->
+    <div class="card">
+        <div class="card-header">
+            <h3>🎯 Average Prediction Confidence</h3>
+            <p style="font-size: 0.85rem; color: var(--gray); margin-top: 0.5rem;">Model confidence levels</p>
+        </div>
+        <div class="card-body">
+            <canvas id="confidenceChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Feature Importance Chart -->
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h3>⭐ Top 10 Most Important Symptoms</h3>
+        <p style="font-size: 0.85rem; color: var(--gray); margin-top: 0.5rem;">Symptoms with highest predictive
+            power</p>
+    </div>
+    <div class="card-body">
+        <canvas id="importanceChart" style="max-height: 350px;"></canvas>
+    </div>
+</div>
+
+<!-- Confusion Matrix Image -->
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h3>🎯 Confusion Matrix</h3>
+        <p style="color: var(--gray); font-size: 0.9rem; margin-top: 0.5rem;">
+            Visual representation of model predictions vs actual values
+        </p>
+    </div>
+    <div class="card-body" style="text-align: center;">
+        <div id="confusionMatrixContainer">
+            <p style="color: var(--gray); padding: 2rem;">
+                Confusion matrix is generated during model training.
+                Check the models/confusion_matrix.png file in your project directory.
+            </p>
+            <div style="background: var(--light); padding: 2rem; border-radius: 10px;">
+                <p style="font-size: 3rem; margin-bottom: 1rem;">📊</p>
+                <p><strong>File Location:</strong> models/confusion_matrix.png</p>
+                <p style="color: var(--gray); margin-top: 0.5rem;">
+                    The confusion matrix shows prediction accuracy for each disease class
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Key Insights -->
+<div class="card"
+    style="margin-top: 2rem; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+    <h3 style="margin-bottom: 1.5rem;">💡 Key Insights</h3>
+    <div class="grid grid-2">
+        <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 10px;">
+            <h4 style="margin-bottom: 0.8rem;">✓ High Accuracy</h4>
+            <p>The SVM model achieves excellent accuracy through proper feature engineering and balanced
+                training data.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 10px;">
+            <h4 style="margin-bottom: 0.8rem;">✓ Comprehensive Coverage</h4>
+            <p>System covers 20 different diseases across multiple medical categories including viral,
+                bacterial, and chronic conditions.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 10px;">
+            <h4 style="margin-bottom: 0.8rem;">✓ Real-time Prediction</h4>
+            <p>Predictions are generated in milliseconds, providing instant feedback to users.</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 10px;">
+            <h4 style="margin-bottom: 0.8rem;">✓ Continuous Improvement</h4>
+            <p>Model can be retrained with new data to improve accuracy and add more diseases.</p>
+        </div>
+    </div>
+</div>
+</div>
+
+<footer>
+    <p>&copy; 2025 AI Health Diagnostic - AI Health Diagnosis System</p>
+</footer>
+
+<script src="assets/js/app.js"></script>
+<script>
+    let charts = {};
+
+    // Load metrics
+    async function loadMetrics() {
+        const result = await apiRequest('/get-metrics');
+        if (result.success) {
+            const m = result.metrics;
+            document.getElementById('modelAccuracy').textContent = (m.accuracy * 100).toFixed(2) + '%';
+            document.getElementById('totalDiseases').textContent = m.total_diseases;
+            document.getElementById('totalSymptoms').textContent = m.total_symptoms;
+            document.getElementById('trainingsamples').textContent = m.training_samples;
+            document.getElementById('modelType').textContent = m.model_type;
+            document.getElementById('kernel').textContent = m.kernel;
+        }
+    }
+
+    // Load and create charts
+    async function loadCharts() {
+        const result = await apiRequest('/get-chart-data');
+        if (result.success) {
+            const data = result.charts;
+
+            // Performance Chart - Bar
+            createBarChart('performanceChart',
+                'Model Performance Metrics',
+                data.model_performance.labels,
+                data.model_performance.data,
+                ['#4F46E5', '#10B981', '#F59E0B']
+            );
+
+            // Severity Chart - Doughnut
+            createPieChart('severityChart',
+                'Disease Severity Distribution',
+                data.severity_distribution.labels,
+                data.severity_distribution.data,
+                ['#10B981', '#F59E0B', '#EF4444', '#8B5CF6']
+            );
+
+            // Disease Distribution Chart - Horizontal Bar
+            createHorizontalBarChart('diseaseChart',
+                'Samples per Disease',
+                data.disease_distribution.labels,
+                data.disease_distribution.data
+            );
+
+            // Symptom Frequency Chart - Gradient Bar
+            createGradientBarChart('symptomChart',
+                'Most Common Symptoms',
+                data.symptom_frequency.labels,
+                data.symptom_frequency.data
+            );
+
+            // Category Chart - Pie
+            createPieChart('categoryChart',
+                'Disease Categories',
+                data.disease_categories.labels,
+                data.disease_categories.data,
+                ['#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899']
+            );
+
+            // Confidence Chart - Line
+            createLineChart('confidenceChart',
+                'Prediction Confidence',
+                data.confidence_levels.labels,
+                data.confidence_levels.data
+            );
+
+            // Feature Importance - Horizontal Bar with gradient
+            createImportanceChart('importanceChart',
+                'Feature Importance',
+                data.feature_importance.labels,
+                data.feature_importance.data
+            );
+        }
+    }
+
+    // Create Bar Chart
+    function createBarChart(canvasId, title, labels, data, colors) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        charts[canvasId] = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: title,
+                    data: data,
+                    backgroundColor: Array.isArray(colors) ? colors : colors,
+                    borderColor: Array.isArray(colors) ? colors : colors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                return value + (canvasId === 'performanceChart' ? '%' : '');
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Create Horizontal Bar Chart
+    function createHorizontalBarChart(canvasId, title, labels, data) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        charts[canvasId] = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: title,
+                    data: data,
+                    backgroundColor: '#4F46E5',
+                    borderColor: '#4F46E5',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // Create Pie Chart
+    function createPieChart(canvasId, title, labels, data, colors) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        charts[canvasId] = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: title,
+                    data: data,
+                    backgroundColor: colors,
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    // Create Line Chart
+    function createLineChart(canvasId, title, labels, data) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        charts[canvasId] = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: title,
+                    data: data,
+                    borderColor: '#4F46E5',
+                    backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    pointBackgroundColor: '#4F46E5',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function (value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Create Gradient Bar Chart
+    function createGradientBarChart(canvasId, title, labels, data) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, '#4F46E5');
+        gradient.addColorStop(0.5, '#10B981');
+        gradient.addColorStop(1, '#F59E0B');
+
+        charts[canvasId] = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: title,
+                    data: data,
+                    backgroundColor: gradient,
+                    borderColor: gradient,
+                    borderWidth: 1,
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // Create Importance Chart (Horizontal Bar with gradient)
+    function createImportanceChart(canvasId, title, labels, data) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+
+        // Generate colors from high to low importance
+        const colors = data.map((value, index) => {
+            const ratio = value / Math.max(...data);
+            return `rgba(79, 70, 229, ${0.3 + ratio * 0.7})`;
+        });
+
+        charts[canvasId] = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Importance Score',
+                    data: data,
+                    backgroundColor: colors,
+                    borderColor: '#4F46E5',
+                    borderWidth: 1,
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function (value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Initialize
+    loadMetrics();
+    loadCharts();
+</script>
+</body>
+
+</html>

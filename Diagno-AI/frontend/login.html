@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - AI Health Diagnostic</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <div class="logo-with-img">
+                    <img src="assets/img/brand-logo.svg" alt="AI Health Diagnostic" class="site-logo-img"
+                        onerror="this.style.display='none'" />
+                </div>
+                <span>AI Health Diagnostic</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="login.html" class="active">Login</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="auth-card">
+            <div class="auth-illustration">
+                <!-- Simple illustration / brand area -->
+                <div style="text-align:center;">
+                    <img src="assets/img/health-illustration.png" alt="Illustration"
+                        style="max-width:100%;max-height:220px;opacity:0.95;border-radius:10px;"
+                        onerror="this.style.display='none'" />
+                    <h3 style="color:var(--primary-2);margin-top:18px;">Welcome to AI Health Diagnostic</h3>
+                    <p style="color:var(--muted);max-width:360px;margin:0 auto">Fast, intuitive AI-based diagnosis.
+                        Secure accounts with saved reports.</p>
+                </div>
+            </div>
+
+            <div class="auth-form">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+                    <h2>Sign In</h2>
+                    <div style="font-size:0.9rem;color:var(--muted)">New here? <a href="#"
+                            onclick="showSignupForm();return false;">Create account</a></div>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginUsername">Username</label>
+                        <input type="text" id="loginUsername" class="form-control" placeholder="Enter your username"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password"
+                            required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-full">🔓 Sign In</button>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signupForm" onsubmit="handleSignup(event)" style="display: none; margin-top: 1rem;">
+                    <div class="form-group">
+                        <label for="signupFullname">Full Name</label>
+                        <input type="text" id="signupFullname" class="form-control" placeholder="Enter your full name"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupEmail">Email</label>
+                        <input type="email" id="signupEmail" class="form-control" placeholder="Enter your email"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupUsername">Username</label>
+                        <input type="text" id="signupUsername" class="form-control" placeholder="Choose a username"
+                            required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" class="form-control"
+                            placeholder="Choose a strong password" required minlength="6">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="signupConfirmPassword">Confirm Password</label>
+                        <input type="password" id="signupConfirmPassword" class="form-control"
+                            placeholder="Confirm your password" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-secondary btn-full">✨ Create Account</button>
+                </form>
+
+                <div style="text-align:center;margin-top:1rem;color:var(--muted);font-size:0.95rem">
+                    This is a demo system with in-memory storage. Your data will be stored for this session only.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 AI Health Diagnostic - AI Health Diagnosis System</p>
+    </footer>
+
+    <script src="assets/js/app.js"></script>
+    <script>
+        function showLoginForm() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('signupForm').style.display = 'none';
+            document.getElementById('loginTab').style.background = 'var(--primary-color)';
+            document.getElementById('loginTab').style.color = 'white';
+            document.getElementById('signupTab').style.background = 'var(--light)';
+            document.getElementById('signupTab').style.color = 'var(--dark)';
+        }
+
+        function showSignupForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'block';
+            document.getElementById('signupTab').style.background = 'var(--secondary-color)';
+            document.getElementById('signupTab').style.color = 'white';
+            document.getElementById('loginTab').style.background = 'var(--light)';
+            document.getElementById('loginTab').style.color = 'var(--dark)';
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const username = document.getElementById('loginUsername').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const result = await apiRequest('/login', 'POST', { username, password });
+
+            if (result.success) {
+                setToken(result.token);
+                setUser(result.user);
+                showAlert('Login successful! Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+            } else {
+                showAlert(result.message, 'error');
+            }
+        }
+
+        async function handleSignup(event) {
+            event.preventDefault();
+
+            const fullname = document.getElementById('signupFullname').value;
+            const email = document.getElementById('signupEmail').value;
+            const username = document.getElementById('signupUsername').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+
+            if (password !== confirmPassword) {
+                showAlert('Passwords do not match!', 'error');
+                return;
+            }
+
+            const result = await apiRequest('/signup', 'POST', {
+                fullname,
+                email,
+                username,
+                password
+            });
+
+            if (result.success) {
+                showAlert('Account created successfully! Please login.', 'success');
+                setTimeout(() => {
+                    showLoginForm();
+                    document.getElementById('loginUsername').value = username;
+                }, 1500);
+            } else {
+                showAlert(result.message, 'error');
+            }
+        }
+
+        // If already logged in, redirect to dashboard
+        if (isAuthenticated()) {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+
+</html>
